@@ -7,21 +7,17 @@
     tools:context=".MainActivity">
 
     <EditText
-        style="@style/MyStyle"
         android:id="@+id/edit_query"
+        style="@style/MyStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <TextView
+        android:id="@+id/resultView"
         style="@style/MyStyle"
-        android:id="@+id/converter_result"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/edit_query"
-        android:text="Hello World!" />
-    <Button
-        android:id="@+id/btnConvert"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_below="@+id/edit_query"/>
+
 
 </RelativeLayout>
