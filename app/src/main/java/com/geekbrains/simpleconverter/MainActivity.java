@@ -7,53 +7,68 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
-public class MainActivity extends AppCompatActivity implements MainView {
+public class MainActivity extends AppCompatActivity{
 
-    Presenter presenter;
-    private final Observer<? super CharSequence> observer;
+    private final Observer<? super CharSequence> observer=new Observer<CharSequence>() {
+        @Override
+        public void onSubscribe(Disposable d) {
 
-    public MainActivity(Observer<? super CharSequence> observer) {
-        this.observer = observer;
-    }
+        }
+
+        @Override
+        public void onNext(CharSequence sequence) {
+            ((TextView)findViewById(R.id.resultView)).setText(sequence);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onComplete() {
+
+        }
+    };
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        presenter=new Presenter(this);
         final EditText editText=findViewById(R.id.edit_query);
-        editText.addTextChangedListener(textWatcher);
-    }
+        Observable<CharSequence> observable=Observable.create(new ObservableOnSubscribe<CharSequence>() {
+            @Override
+            public void subscribe(final ObservableEmitter<CharSequence> emitter) throws Exception {
+                TextWatcher textWatcher=new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-    private final TextWatcher textWatcher=new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+                    }
 
-        }
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        emitter.onNext(s);
+                    }
 
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
+                    @Override
+                    public void afterTextChanged(Editable s) {
 
-        @Override
-        public void afterTextChanged(Editable s) {
+                    }
+                };
+                editText.addTextChangedListener(textWatcher);
+            }
+        });
+        observable.safeSubscribe(observer);
 
-        }
-    };
-
-    @Override
-    public void setMS(String text) {
-        ((TextView)findViewById(R.id.resultView)).setText(presenter.getMS(text));
-    }
-
-    @Override
-    public void errorToast(String msg) {
-        Toast.makeText(this.getBaseContext(),msg,Toast.LENGTH_SHORT).show();
     }
 }
